@@ -1,6 +1,10 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Scanner;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.border.LineBorder;
@@ -9,6 +13,13 @@ import javax.swing.*;
 public class MancalaTester {
 
 	public static void main(String[] args) {
+
+		System.out.println("Enter the number of stones per pit (3 or 4):");
+		Scanner s = new Scanner(System.in);
+		String numOfStones = s.nextLine();
+		int num = Integer.parseInt(numOfStones);
+		Mancala m = new Mancala(num);
+
 		JFrame frame = new JFrame("Mancala");
 		frame.setSize(400, 400);
 		frame.setLayout(new BorderLayout());
@@ -30,17 +41,40 @@ public class MancalaTester {
 		frame.add(south, BorderLayout.SOUTH); // player A
 
 		JLabel b = new JLabel("      B6          B5          B4          B3          B2         B1");
-		JButton b6 = new JButton();
+		JButton b6 = new JButton(String.valueOf(m.getB6()));
 		b6.setPreferredSize(new Dimension(50, 50));
-		JButton b5 = new JButton();
+		b6.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				if (m.getNum() == 3) {
+					m.addMancalB();
+					m.addA1();
+					m.addA2();
+
+				} else if (m.getNum() == 4) {
+					m.addMancalB();
+					m.addA1();
+					m.addA2();
+					m.addA3();
+				}
+
+				b6.setText("0");
+
+
+			}
+
+		});
+		JButton b5 = new JButton(String.valueOf(m.getB5()));
 		b5.setPreferredSize(new Dimension(50, 50));
-		JButton b4 = new JButton();
+		JButton b4 = new JButton(String.valueOf(m.getB4()));
 		b4.setPreferredSize(new Dimension(50, 50));
-		JButton b3 = new JButton();
+		JButton b3 = new JButton(String.valueOf(m.getB3()));
 		b3.setPreferredSize(new Dimension(50, 50));
-		JButton b2 = new JButton();
+		JButton b2 = new JButton(String.valueOf(m.getB2()));
 		b2.setPreferredSize(new Dimension(50, 50));
-		JButton b1 = new JButton();
+		JButton b1 = new JButton(String.valueOf(m.getB1()));
 		b1.setPreferredSize(new Dimension(50, 50));
 
 		JPanel centerTop1 = new JPanel();
@@ -58,17 +92,17 @@ public class MancalaTester {
 		centerTop1.add(centerTop2, BorderLayout.SOUTH);
 
 		JLabel a = new JLabel("      A1         A2          A3         A4          A5         A6");
-		JButton a6 = new JButton();
+		JButton a6 = new JButton(String.valueOf(m.getA6()));
 		a6.setPreferredSize(new Dimension(50, 50));
-		JButton a5 = new JButton();
+		JButton a5 = new JButton(String.valueOf(m.getA5()));
 		a5.setPreferredSize(new Dimension(50, 50));
-		JButton a4 = new JButton();
+		JButton a4 = new JButton(String.valueOf(m.getA4()));
 		a4.setPreferredSize(new Dimension(50, 50));
-		JButton a3 = new JButton();
+		JButton a3 = new JButton(String.valueOf(m.getA3()));
 		a3.setPreferredSize(new Dimension(50, 50));
-		JButton a2 = new JButton();
+		JButton a2 = new JButton(String.valueOf(m.getA2()));
 		a2.setPreferredSize(new Dimension(50, 50));
-		JButton a1 = new JButton();
+		JButton a1 = new JButton(String.valueOf(m.getA1()));
 		a1.setPreferredSize(new Dimension(50, 50));
 
 		JPanel centerBottom1 = new JPanel();
@@ -90,8 +124,8 @@ public class MancalaTester {
 		center.add(centerTop1, BorderLayout.NORTH); // B6,B5,B4,B3,B3,B1 and corresponding square button
 		center.add(centerBottom1, BorderLayout.SOUTH); // A1,A2,A3,A4,A5,A6 and corresponding square button
 
-		JButton mB = new JButton(); // mancala B button
-		JButton mA = new JButton(); // mancala A button
+		JButton mB = new JButton(String.valueOf(m.getMancalaA())); // mancala B button
+		JButton mA = new JButton(String.valueOf(m.getMancalaB())); // mancala A button
 		mB.setPreferredSize(new Dimension(50, 100));
 		mA.setPreferredSize(new Dimension(50, 100));
 
