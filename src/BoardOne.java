@@ -1,28 +1,37 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class BoardOne implements StyleFormatter {
+	
+	ChangeListener pitsChanged;
 
 	@Override
 	public void createBoard(Mancala m, int num) {
+		
+		Stone stone = new Stone(0,0);
+		StonesIcon icon = new StonesIcon(stone,10,10);
+		JLabel stoneLabel = new JLabel(icon);
 
 		JFrame frame = new JFrame("Mancala");
-		frame.setSize(400, 400);
 		frame.setLayout(new BorderLayout());
 
 		JLabel playerB = new JLabel("<-- Player B");
 		JLabel playerA = new JLabel("Player A -->");
-		JButton undo = new JButton("Undo");
+		JButton undoA = new JButton("Undo");
+		JButton undoB = new JButton("Undo");
 		
-		Stone s = new Stone(7,7,num);
-		StonesIcon icon = new StonesIcon(s,10,10);
 
 		JLabel m1 = new JLabel("<html>M<br>A</br><br>N</br><br>C</br><br>A</br><br>L</br><br>A<br><br> B</br></html>");
 		JLabel m2 = new JLabel("<html>M<br>A</br><br>N</br><br>C</br><br>A</br><br>L</br><br>A<br><br> A</br></html>");
@@ -30,71 +39,125 @@ public class BoardOne implements StyleFormatter {
 		JPanel north = new JPanel();
 		north.setBackground(Color.orange);
 		north.add(playerB);
-		north.add(undo);
+		north.add(undoB);
 		frame.add(north, BorderLayout.NORTH); // playerB and undo button
 
 		JPanel south = new JPanel();
 		south.setBackground(Color.yellow);
 		south.add(playerA);
+		south.add(undoA);
 		frame.add(south, BorderLayout.SOUTH); // player A
 
 		JLabel bLabel = new JLabel("      B6          B5          B4          B3          B2         B1");
 
-		JButton mB = new JButton("mB"); // mancala B button
+		JPanel mB = new JPanel(); // mancala B button
 		mB.setPreferredSize(new Dimension(50, 100));
+		mB.setBackground(Color.ORANGE);
+		mB.setBorder(BorderFactory.createLoweredBevelBorder());
 
 		// creating B pit buttons
-		JButton[] bButtons = m.getbButtons();
+		JPanel[] bPits = m.getbPits();
 
-		bButtons[0] = mB; //first element will be mancala B
+		bPits[0] = mB; //first element will be mancala B
 
-		for (int i = 1; i < m.getbButtons().length; i++) {
-			JButton b = new JButton(icon);
+		for (int i = 1; i < m.getbPits().length; i++) {
+			JPanel b = new JPanel();
 			b.setPreferredSize(new Dimension(50, 50));
 			b.setBackground(Color.orange);
 			b.setOpaque(true);
+			b.setLayout(new FlowLayout());
 
-			bButtons[i] = b;
+			bPits[i] = b;
 		}
-		m.setbButtons(bButtons);
+		m.setbPits(bPits);
 
 		JPanel centerTop1 = new JPanel();
 		centerTop1.setLayout(new BorderLayout());
 		centerTop1.add(bLabel, BorderLayout.NORTH);
 
 		JPanel centerTop2 = new JPanel();
-		for (int i = 0; i < bButtons.length; i++) {
-			centerTop2.add(bButtons[i]);
+		for (int i = 0; i < bPits.length; i++) {
+			centerTop2.add(bPits[i]);
 		}
 
 		centerTop1.add(centerTop2, BorderLayout.SOUTH);
 
 		JLabel aLabel = new JLabel("      A1         A2          A3         A4          A5         A6");
 
-		JButton mA = new JButton("mA"); // mancala A button
+		JPanel mA = new JPanel(); // mancala A button
 		mA.setPreferredSize(new Dimension(50, 100));
+		mA.setBackground(Color.yellow);
+		mA.setBorder(BorderFactory.createLoweredBevelBorder());
+		
 
-		JButton[] aButtons = m.getaButtons();
+		JPanel[] aPits = m.getaPits();
 
 		// creating A pit buttons
-		for (int i = 0; i < m.getaButtons().length - 1; i++) {
-			JButton a = new JButton(icon);
+		for (int i = 0; i < m.getaPits().length - 1; i++) {
+			JPanel a = new JPanel();
 			a.setPreferredSize(new Dimension(50, 50));
 			a.setBackground(Color.yellow);
 			a.setOpaque(true);
+			a.setLayout(new FlowLayout());
 
-			aButtons[i] = a;
+			aPits[i] = a;
 		}
-		aButtons[m.getaButtons().length - 1] = mA; // last element in aButtons is mancala A
-		m.setaButtons(aButtons);
+		aPits[m.getaPits().length - 1] = mA; // last element in aButtons is mancala A
+		m.setaPits(aPits);
+		
+		pitsChanged = new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				
+				for (int i = 0; i <= m.getaPits().length - 1; i++) {
+					
+					System.out.println(i + ": " + m.getA().get(i));
+					
+					if(m.getA().get(i) > 0) {
+						aPits[i].removeAll();
+						
+						for(int j = 0; j < m.getA().get(i); j++) {
+							aPits[i].add(new JLabel(icon));
+							bPits[i].revalidate();
+							aPits[i].repaint();
+						}
+					} 
+				}
+				
+				int index = 7;
+				
+				for (int i = m.getbPits().length - 1; i >= 0; i--) {
+					
+					System.out.println(index + ": " + m.getA().get(index));
+					
+					if(m.getA().get(index) > 0) {
+						bPits[i].removeAll();
+						for(int j = 0; j < m.getA().get(index); j++) {
+							bPits[i].add(new JLabel(icon));
+							bPits[i].revalidate();
+							bPits[i].repaint();
+						}
+						
+					} 
+					index++;
+					
+				}
+				
+				
+			}
+			
+		};
+		
+		m.setPitsChanged(pitsChanged);
 
 		JPanel centerBottom1 = new JPanel();
 		centerBottom1.setLayout(new BorderLayout());
 		centerBottom1.add(aLabel, BorderLayout.SOUTH);
 
 		JPanel centerBottom2 = new JPanel();
-		for (int i = 0; i < aButtons.length; i++) {
-			centerBottom2.add(aButtons[i]);
+		for (int i = 0; i < aPits.length; i++) {
+			centerBottom2.add(aPits[i]);
 		}
 
 		centerBottom1.add(centerBottom2, BorderLayout.NORTH);
