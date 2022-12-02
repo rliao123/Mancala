@@ -11,7 +11,7 @@ import javax.swing.border.LineBorder;
 public class BoardOne implements StyleFormatter {
 
 	@Override
-	public void createBoard(Mancala m) {
+	public void createBoard(Mancala m, int num) {
 
 		JFrame frame = new JFrame("Mancala");
 		frame.setSize(400, 400);
@@ -20,6 +20,9 @@ public class BoardOne implements StyleFormatter {
 		JLabel playerB = new JLabel("<-- Player B");
 		JLabel playerA = new JLabel("Player A -->");
 		JButton undo = new JButton("Undo");
+		
+		Stone s = new Stone(7,7,num);
+		StonesIcon icon = new StonesIcon(s,10,10);
 
 		JLabel m1 = new JLabel("<html>M<br>A</br><br>N</br><br>C</br><br>A</br><br>L</br><br>A<br><br> B</br></html>");
 		JLabel m2 = new JLabel("<html>M<br>A</br><br>N</br><br>C</br><br>A</br><br>L</br><br>A<br><br> A</br></html>");
@@ -46,7 +49,7 @@ public class BoardOne implements StyleFormatter {
 		bButtons[0] = mB; //first element will be mancala B
 
 		for (int i = 1; i < m.getbButtons().length; i++) {
-			JButton b = new JButton();
+			JButton b = new JButton(icon);
 			b.setPreferredSize(new Dimension(50, 50));
 			b.setBackground(Color.orange);
 			b.setOpaque(true);
@@ -75,7 +78,7 @@ public class BoardOne implements StyleFormatter {
 
 		// creating A pit buttons
 		for (int i = 0; i < m.getaButtons().length - 1; i++) {
-			JButton a = new JButton();
+			JButton a = new JButton(icon);
 			a.setPreferredSize(new Dimension(50, 50));
 			a.setBackground(Color.yellow);
 			a.setOpaque(true);

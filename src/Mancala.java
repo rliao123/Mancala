@@ -29,6 +29,7 @@ public class Mancala {
 		
 		bButtons = new JButton[7];
 		aButtons = new JButton[7];
+		numOfStones = num;
 
 	}
 	
@@ -65,7 +66,7 @@ public class Mancala {
 	}
 	
 	public void style(StyleFormatter s, Mancala m) {
-		s.createBoard(m);
+		s.createBoard(m,numOfStones);
 	}
 
 }

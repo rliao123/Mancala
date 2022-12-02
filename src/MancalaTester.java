@@ -118,6 +118,7 @@ public class MancalaTester {
 
 						a.set(index, 0);
 						allPits[index].setText("0");
+						
 
 						for (int i = index + 1; i < allPits.length; i++) {
 
