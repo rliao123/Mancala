@@ -1,17 +1,25 @@
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class Mancala {
 
 	private ArrayList<Integer> a = new ArrayList<Integer>();
-	private ArrayList<ActionListener> listeners = new ArrayList<ActionListener>();
+	private ChangeListener pitsChanged;
+	private ArrayList<MouseListener> listeners = new ArrayList<MouseListener>();
 
 	private int num;
 	private int numOfStones;
-	private JButton[] bButtons;
-	private JButton[] aButtons;
+	private JPanel mancalaA;
+	private JPanel mancalaB;
+	private JPanel[] bPits;
+	private JPanel[] aPits;
 	
 
 	public Mancala(int num) {
@@ -27,14 +35,20 @@ public class Mancala {
 		}
 		a.add(0);
 		
-		bButtons = new JButton[7];
-		aButtons = new JButton[7];
+		bPits = new JPanel[7];
+		aPits = new JPanel[7];
+		mancalaA = new JPanel();
+		mancalaB = new JPanel();
 		numOfStones = num;
 
 	}
 	
 	public ArrayList<Integer> getA() {
 		return a;
+	}
+	
+	public void setPitNum(int pitNum, int index) {
+		a.set(index, pitNum);
 	}
 	
 	public int getNum() {
@@ -49,24 +63,52 @@ public class Mancala {
 		this.numOfStones = numOfStones;
 	}
 
-	public JButton[] getbButtons() {
-		return bButtons;
+	public JPanel[] getbPits() {
+		return bPits;
 	}
 
-	public void setbButtons(JButton[] bButtons) {
-		this.bButtons = bButtons;
+	public void setbPits(JPanel[] bPits) {
+		this.bPits = bPits;
 	}
 
-	public JButton[] getaButtons() {
-		return aButtons;
+	public JPanel[] getaPits() {
+		return aPits;
 	}
 
-	public void setaButtons(JButton[] aButtons) {
-		this.aButtons = aButtons;
+	public void setaPits(JPanel[] aPits) {
+		this.aPits = aPits;
 	}
 	
 	public void style(StyleFormatter s, Mancala m) {
 		s.createBoard(m,numOfStones);
+	}
+
+	public JPanel getMancalaA() {
+		return mancalaA;
+	}
+
+	public void setMancalaA(JPanel mancalaA) {
+		this.mancalaA = mancalaA;
+	}
+
+	public JPanel getMancalaB() {
+		return mancalaB;
+	}
+
+	public void setMancalaB(JPanel mancalaB) {
+		this.mancalaB = mancalaB;
+	}
+
+	public ChangeListener getPitsChanged() {
+		return pitsChanged;
+	}
+
+	public void setPitsChanged(ChangeListener pitsChanged) {
+		this.pitsChanged = pitsChanged;
+	}
+	
+	public void startProgram() {
+		getPitsChanged().stateChanged(new ChangeEvent(this));
 	}
 
 }

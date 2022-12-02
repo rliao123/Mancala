@@ -4,144 +4,193 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
 import javax.swing.*;
 
 public class MancalaTester {
 
 	private static ArrayList<Integer> a;
-	static JButton[] allPits = new JButton[14];
+	private static StyleFormatter view;
+	static JPanel[] allPits = new JPanel[14];
+	private static Mancala m;
 
 	public static void main(String[] args) {
-
+		
 		System.out.println("Enter the number of stones per pit (3 or 4):");
 		Scanner s = new Scanner(System.in);
 		String numOfStones = s.nextLine();
 		int num = Integer.parseInt(numOfStones);
-
-		Mancala m = new Mancala(num);
+		
+		m = new Mancala(num);
 		m.setNumOfStones(num);
 		a = m.getA(); // a is array list of all pits
 		
-		StyleFormatter styleBoard = new BoardOne(); //when these two lines are outside of actionPerformed, it works
-		m.style(styleBoard, m);
+		view = new BoardOne(); //when these two lines are outside of actionPerformed, it works
+		m.style(view, m);
 
-		//ERROR
-//		JFrame styleFrame = new JFrame();
-//		JButton one = new JButton("Board One");
-//		one.setPreferredSize(new Dimension(100,100));
-//		one.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				StyleFormatter styleBoard = new BoardOne();
-//				m.style(styleBoard, m);
-//			}
-//		});
-//		JButton two = new JButton("Board Two");
-//		two.setPreferredSize(new Dimension(100,100));
-//		two.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				StyleFormatter styleBoard = new BoardTwo();
-//				m.style(styleBoard, m);
-//			}
-//		});
-//		styleFrame.setLayout(new FlowLayout());
-//		styleFrame.add(two);
-//		styleFrame.add(one);
-//		styleFrame.pack();
-//		styleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		styleFrame.setVisible(true);
 
-		for (int i = 0; i < m.getaButtons().length; i++) {
-			// m.getaButtons()[i].addActionListener(createButtonListener(i));
-			allPits[i] = m.getaButtons()[i];
+		for (int i = 0; i < m.getaPits().length; i++) {
+			allPits[i] = m.getaPits()[i];
 		}
+		
+		allPits[7] = m.getMancalaA();
 		int index = 7;
-
-		for (int i = m.getbButtons().length - 1; i >= 0; i--) {
-
-			allPits[index] = m.getbButtons()[i];
+		
+		for (int i = m.getbPits().length - 1; i >= 0; i--) {
+			allPits[index] = m.getbPits()[i];
 			index++;
-			// m.getbButtons()[i].addActionListener(createButtonListener(i));
 		}
-
-//		// for button action listeners and moving the stones
-//		allPits[0] = a1;
-//		allPits[1] = a2;
-//		allPits[2] = a3;
-//		allPits[3] = a4;
-//		allPits[4] = a5;
-//		allPits[5] = a6;
-//		allPits[6] = mA;
-//		allPits[7] = b1;
-//		allPits[8] = b2;
-//		allPits[9] = b3;
-//		allPits[10] = b4;
-//		allPits[11] = b5;
-//		allPits[12] = b6;
-//		allPits[13] = mB;
-
-		allPits[0].addActionListener(createButtonListener(0));
-		allPits[1].addActionListener(createButtonListener(1));
-		allPits[2].addActionListener(createButtonListener(2));
-		allPits[3].addActionListener(createButtonListener(3));
-		allPits[4].addActionListener(createButtonListener(4));
-		allPits[5].addActionListener(createButtonListener(5));
-		allPits[6].addActionListener(createButtonListener(6));
-		allPits[7].addActionListener(createButtonListener(7));
-		allPits[8].addActionListener(createButtonListener(8));
-		allPits[9].addActionListener(createButtonListener(9));
-		allPits[10].addActionListener(createButtonListener(10));
-		allPits[11].addActionListener(createButtonListener(11));
-		allPits[12].addActionListener(createButtonListener(12));
-		allPits[13].addActionListener(createButtonListener(13));
+		
+		for(int i = 0; i < allPits.length; i++) {
+			PitMouseListener p = new PitMouseListener();
+			p.setMancala(m);
+			p.setPitNumber(i);
+			p.setPit(allPits[i], allPits);
+			allPits[i].addMouseListener(p);
+		}
+		
+		m.startProgram();
+		
+		
+		// for undo buttons, have an array list that preserves a before change
 
 	}
+	
+//	public static ActionListener createButtonListener(final int index) {
+//
+//		return new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//
+//				int stones = a.get(index);
+//				int counter = 0;
+//
+//			
+//			}
+//		};
+//	}
+	
+	
+	
+}
 
-	public static ActionListener createButtonListener(final int index) {
 
-		return new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+class PitMouseListener implements MouseListener{
+	
+	static JLabel stoneComponent;
+	private JPanel[] allPits;
+	private int pitNumber;
+	private Mancala m;
+	private JPanel pit;
+	
+	public void setPit(JPanel pit, JPanel[] allPits) {
+		this.allPits = allPits;
+		this.pit = pit;
+	}
+	
+	public void setMancala(Mancala m) {
+		this.m = m;
+	}
+	
+	public void setPitNumber(int pitNumber) {
+		this.pitNumber = pitNumber;
+	}
 
-				int stones = a.get(index);
-				int counter = 0;
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		
+		if(pitNumber >= 0 && pitNumber < 6) {
+			m.getaPits()[pitNumber].removeAll();
+			m.getaPits()[pitNumber].revalidate();
+			m.getaPits()[pitNumber].repaint();
+		} else if (pitNumber >= 7 && pitNumber < 13) {
+			m.getbPits()[6 - (pitNumber - 7)].removeAll();
+			m.getbPits()[6 - (pitNumber - 7)].revalidate();
+			m.getbPits()[6 - (pitNumber - 7)].repaint();
+		}
+		
+		
+		
+		// add stone
+		// call the other mouselistener
+		
+		// while pits are not mancalas and the number of stones in the current pit isnt 0
+		
+		int i = 0;
+		
+		while((pitNumber != 6 || pitNumber != 13) && (m.getA().get(pitNumber) > 0)) {
+			int stones = m.getA().get(pitNumber);
+			int counter = 0;
+			
+			while (counter < stones) {
+				m.getA().set(pitNumber, 0);
+				
+				// if pit is A pit or B pit 
+				
+				for (i = pitNumber + 1; i < allPits.length; i++) {
 
-				if (a.get(index) != 0) {
+					// update pit value
+					int temp = m.getA().get(i) + 1;
+					m.getA().set(i, temp);
+					
+					counter++;
 
-					while (counter < stones) {
-
-						a.set(index, 0);
-						allPits[index].setText("0");
-						
-
-						for (int i = index + 1; i < allPits.length; i++) {
-
-							int temp = a.get(i) + 1;
-							a.set(i, temp);
-
-							// update the value
-							allPits[i].setText(String.valueOf(a.get(i)));
-							counter++;
-
-							if (counter == stones) {
-								break;
-							}
-
-							// loop around
-							if (i == allPits.length - 1) {
-								i = -1;
-							}
-
-						}
+					if (counter == stones) {
+						break;
 					}
+
+					// loop around
+					if (i == allPits.length - 1) {
+						i = -1;
+					}
+
 				}
+				
+				if (i == 13) {
+					pitNumber = 0;
+				} else if(i == 6) {
+					pitNumber = 7;
+				} else pitNumber = i;
+				
 			}
-		};
+			
+		}
+		
+		m.getPitsChanged().stateChanged(new ChangeEvent(this));
+		
+		
 	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

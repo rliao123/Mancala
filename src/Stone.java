@@ -8,10 +8,9 @@ public class Stone {
 	private int y;
 	private int count;
 
-	public Stone(int x, int y, int count) {
+	public Stone(int x, int y) {
 		this.x = x;
 		this.y = y;
-		this.count = count;
 	}
 	
 	public void setX(int x) {
@@ -27,19 +26,11 @@ public class Stone {
 		int tempX = x;
 		int tempY = y;
 		
-		for (int i = 0; i < count; i++) {
-			
-			Ellipse2D.Double dot = new Ellipse2D.Double(tempX, tempY, 5, 5);;
-			
-			g2.setColor(Color.black);
-			g2.fill(dot);
-			g2.draw(dot);
-			
-			tempX+=10;
-			if(tempX % 47 ==0 ) {
-				tempX = 7;
-				tempY += 10;
-			}
-		}
+		Ellipse2D.Double dot = new Ellipse2D.Double(tempX, tempY, 5, 5);;
+		
+		g2.setColor(Color.black);
+		g2.fill(dot);
+		g2.draw(dot);
+		
 	}
 }
