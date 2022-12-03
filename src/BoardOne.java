@@ -1,14 +1,20 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -31,6 +37,72 @@ public class BoardOne implements StyleFormatter {
 		JLabel playerA = new JLabel("Player A -->");
 		JButton undoA = new JButton("Undo");
 		JButton undoB = new JButton("Undo");
+		JTextArea playerTurnIndicator = new JTextArea("");
+		playerTurnIndicator.setEditable(false);
+		
+		
+		undoA.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(m.getNumUndosLeftA() > 0) {
+					m.setPlayerATurn(true);
+					m.setPlayerBTurn(false);
+					m.getPlayerChanged().stateChanged(new ChangeEvent(this));
+					
+					
+					int numUndos = m.getNumUndosLeftA();
+					m.setA(m.getPreviousState());
+					m.setNumUndosLeftA(numUndos - 1);
+					m.getPitsChanged().stateChanged(new ChangeEvent(this));
+				} else if(m.getNumUndosLeftA() == 0) {
+					undoA.setText("Undo Attempts Used!");
+					undoA.setEnabled(false);
+				}
+			}
+			
+		});
+		
+		undoB.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(m.getNumUndosLeftB() > 0) {
+					m.setPlayerATurn(false);
+					m.setPlayerBTurn(true);
+					m.getPlayerChanged().stateChanged(new ChangeEvent(this));
+					
+					int numUndos = m.getNumUndosLeftB();
+					m.setA(m.getPreviousState());
+					m.setNumUndosLeftA(numUndos - 1);
+					m.getPitsChanged().stateChanged(new ChangeEvent(this));
+				} else if(m.getNumUndosLeftB() == 0) {
+					undoB.setText("Undo Attempts Used!");
+					undoB.setEnabled(false);
+				}
+			}
+			
+		});
+		
+		
+		
+		
+		ChangeListener playerTurn = new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				if(m.isPlayerATurn()) {
+					playerTurnIndicator.setText("Player A's turn");
+					playerTurnIndicator.revalidate();
+				} else {
+					playerTurnIndicator.setText("Player B's turn");
+					playerTurnIndicator.revalidate();
+				}
+			}
+			
+		};
+		
+		m.setPlayerChanged(playerTurn);
 		
 
 		JLabel m1 = new JLabel("<html>M<br>A</br><br>N</br><br>C</br><br>A</br><br>L</br><br>A<br><br> B</br></html>");
@@ -38,6 +110,7 @@ public class BoardOne implements StyleFormatter {
 
 		JPanel north = new JPanel();
 		north.setBackground(Color.orange);
+		north.add(playerTurnIndicator);
 		north.add(playerB);
 		north.add(undoB);
 		frame.add(north, BorderLayout.NORTH); // playerB and undo button
@@ -62,7 +135,7 @@ public class BoardOne implements StyleFormatter {
 
 		for (int i = 1; i < m.getbPits().length; i++) {
 			JPanel b = new JPanel();
-			b.setPreferredSize(new Dimension(50, 50));
+			b.setPreferredSize(new Dimension(60, 60));
 			b.setBackground(Color.orange);
 			b.setOpaque(true);
 			b.setLayout(new FlowLayout());
@@ -82,7 +155,7 @@ public class BoardOne implements StyleFormatter {
 
 		centerTop1.add(centerTop2, BorderLayout.SOUTH);
 
-		JLabel aLabel = new JLabel("      A1         A2          A3         A4          A5         A6");
+		JLabel aLabel = new JLabel("<htmL><pre>    A1\t    A2\t    A3\t    A4\t    A5\t     A6<pre><html>");
 
 		JPanel mA = new JPanel(); // mancala A button
 		mA.setPreferredSize(new Dimension(50, 100));
@@ -95,7 +168,7 @@ public class BoardOne implements StyleFormatter {
 		// creating A pit buttons
 		for (int i = 0; i < m.getaPits().length - 1; i++) {
 			JPanel a = new JPanel();
-			a.setPreferredSize(new Dimension(50, 50));
+			a.setPreferredSize(new Dimension(60, 60));
 			a.setBackground(Color.yellow);
 			a.setOpaque(true);
 			a.setLayout(new FlowLayout());
@@ -112,14 +185,20 @@ public class BoardOne implements StyleFormatter {
 				
 				for (int i = 0; i <= m.getaPits().length - 1; i++) {
 					
-					System.out.println(i + ": " + m.getA().get(i));
+					//System.out.println(i + ": " + m.getA().get(i));
 					
-					if(m.getA().get(i) > 0) {
+					if(m.getA().get(i) == 0) {
 						aPits[i].removeAll();
+						aPits[i].revalidate();
+						aPits[i].repaint();
+					} else if(m.getA().get(i) > 0) {
+						aPits[i].removeAll();
+						aPits[i].revalidate();
+						aPits[i].repaint();
 						
 						for(int j = 0; j < m.getA().get(i); j++) {
 							aPits[i].add(new JLabel(icon));
-							bPits[i].revalidate();
+							aPits[i].revalidate();
 							aPits[i].repaint();
 						}
 					} 
@@ -129,10 +208,17 @@ public class BoardOne implements StyleFormatter {
 				
 				for (int i = m.getbPits().length - 1; i >= 0; i--) {
 					
-					System.out.println(index + ": " + m.getA().get(index));
+					//System.out.println(index + ": " + m.getA().get(index));
 					
-					if(m.getA().get(index) > 0) {
+					if(m.getA().get(index) == 0) {
 						bPits[i].removeAll();
+						bPits[i].revalidate();
+						bPits[i].repaint();
+					} else if(m.getA().get(index) > 0) {
+						bPits[i].removeAll();
+						bPits[i].revalidate();
+						bPits[i].repaint();
+						
 						for(int j = 0; j < m.getA().get(index); j++) {
 							bPits[i].add(new JLabel(icon));
 							bPits[i].revalidate();
@@ -180,8 +266,61 @@ public class BoardOne implements StyleFormatter {
 		centerAll.add(board, BorderLayout.CENTER);
 		centerAll.add(m1, BorderLayout.WEST);
 		centerAll.add(m2, BorderLayout.EAST);
+		
+		JPanel winnerPanel = new JPanel();
+		winnerPanel.setPreferredSize(new Dimension(100, 100));
+		winnerPanel.setLayout(new BoxLayout(winnerPanel, BoxLayout.PAGE_AXIS));
+		JPanel go = new JPanel();
+		JPanel wp = new JPanel();
+		
+		JLabel gameOver = new JLabel("Game Over!", SwingConstants.CENTER);
+		gameOver.setFont(new Font("Courier", Font.PLAIN, 45));
+		gameOver.setForeground(new Color(74, 17, 13, 200));
+		go.add(gameOver);
+		winnerPanel.add(go);
+		
+		JLabel whichPlayerWon = new JLabel("", SwingConstants.CENTER);
+		
+		JPanel contentPanel = new JPanel();
+		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.PAGE_AXIS));
+		contentPanel.add(centerAll);
+		contentPanel.add(winnerPanel);
+		winnerPanel.setVisible(false);
+		
+		ChangeListener winner = new ChangeListener() {
 
-		frame.add(centerAll, BorderLayout.CENTER);
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				String whichPlayerWonStr = "";
+				if(m.getA().get(6) > m.getA().get(13)) {
+					whichPlayerWonStr = "Player A Wins!";
+					whichPlayerWon.setForeground(new Color(204, 191, 51, 200));
+				} else if(m.getA().get(6) < m.getA().get(13)) {
+					whichPlayerWonStr = "Player B Wins!";
+					whichPlayerWon.setForeground(Color.orange);
+				} else {
+					whichPlayerWonStr = "It's a Tie!";
+					whichPlayerWon.setForeground(Color.BLUE);
+				}
+				
+				whichPlayerWon.setText(whichPlayerWonStr);
+				whichPlayerWon.setFont(new Font("Courier", Font.PLAIN, 20));
+				wp.add(whichPlayerWon);
+				winnerPanel.add(wp);
+				winnerPanel.setVisible(true);
+				contentPanel.revalidate();
+				contentPanel.repaint();
+				
+				frame.pack();
+			}
+			
+		};
+		
+		m.setGameOver(winner);
+		
+		winnerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		frame.add(contentPanel);
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
