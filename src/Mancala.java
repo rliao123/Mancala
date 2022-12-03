@@ -20,6 +20,13 @@ public class Mancala {
 	private JPanel mancalaB;
 	private JPanel[] bPits;
 	private JPanel[] aPits;
+	private boolean playerATurn;
+	private boolean playerBTurn;
+	private int numUndosLeftA;
+	private int numUndosLeftB;
+	private ChangeListener playerChanged;
+	private ChangeListener gameOver;
+	private ArrayList<Integer> previousState;
 	
 
 	public Mancala(int num) {
@@ -39,12 +46,24 @@ public class Mancala {
 		aPits = new JPanel[7];
 		mancalaA = new JPanel();
 		mancalaB = new JPanel();
+		numUndosLeftA = 3;
+		numUndosLeftB = 3;
 		numOfStones = num;
+		previousState = new ArrayList<Integer>();
+		for(int i = 0; i < a.size(); i++) {
+			previousState.add(a.get(i));
+		}
 
 	}
 	
 	public ArrayList<Integer> getA() {
 		return a;
+	}
+	
+	public void setA(ArrayList<Integer> prevState){
+		for(int i = 0; i < a.size(); i++) {
+			a.set(i, prevState.get(i));
+		}
 	}
 	
 	public void setPitNum(int pitNum, int index) {
@@ -109,6 +128,65 @@ public class Mancala {
 	
 	public void startProgram() {
 		getPitsChanged().stateChanged(new ChangeEvent(this));
+		getPlayerChanged().stateChanged(new ChangeEvent(this));
+	}
+
+	public boolean isPlayerATurn() {
+		return playerATurn;
+	}
+
+	public void setPlayerATurn(boolean playerATurn) {
+		this.playerATurn = playerATurn;
+	}
+
+	public boolean isPlayerBTurn() {
+		return playerBTurn;
+	}
+
+	public void setPlayerBTurn(boolean playerBTurn) {
+		this.playerBTurn = playerBTurn;
+	}
+
+	public ChangeListener getPlayerChanged() {
+		return playerChanged;
+	}
+
+	public void setPlayerChanged(ChangeListener playerChanged) {
+		this.playerChanged = playerChanged;
+	}
+
+	public ChangeListener getGameOver() {
+		return gameOver;
+	}
+
+	public void setGameOver(ChangeListener gameOver) {
+		this.gameOver = gameOver;
+	}
+
+	public ArrayList<Integer> getPreviousState() {
+		return previousState;
+	}
+
+	public void setPreviousState(ArrayList<Integer> previousState) {
+		for(int i = 0; i < a.size(); i++) {
+			this.previousState.set(i, a.get(i));
+		}
+	}
+
+	public int getNumUndosLeftA() {
+		return numUndosLeftA;
+	}
+
+	public void setNumUndosLeftA(int numUndosLeftA) {
+		this.numUndosLeftA = numUndosLeftA;
+	}
+
+	public int getNumUndosLeftB() {
+		return numUndosLeftB;
+	}
+
+	public void setNumUndosLeftB(int numUndosLeftB) {
+		this.numUndosLeftB = numUndosLeftB;
 	}
 
 }
